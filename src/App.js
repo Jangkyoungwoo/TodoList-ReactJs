@@ -22,6 +22,7 @@ function App() {
         {
           id: Date.now(),
           text,
+          isChecked: false
         }
       ]);
       toDoAry.push(
@@ -30,6 +31,7 @@ function App() {
           {
             id: Date.now(),
             text,
+            isChecked: false,
           }
         ]
       );
@@ -42,12 +44,19 @@ function App() {
     setText("");
   };
 
+  const handleDelete = (id) => {
+    toDoAry = todos.filter((todo) => todo.id !== id);
+    console.log(id);
+    setTodos(toDoAry);
+    todoStorage();
+  }
+
   return (
     <div className="App">
       <h1>List</h1>
       <input onChange={handleChangeText} value={text} typeof='text' placeholder='todos'></input>
       <button onClick={handleSetTodos}>Add</button>
-      <Context todos={todos} />
+      <Context todos={todos} onDelete={handleDelete} />
     </div>
   );
 }
