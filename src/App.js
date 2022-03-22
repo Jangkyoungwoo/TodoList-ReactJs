@@ -3,31 +3,42 @@ import Context from './Context'
 
 function App() {
   const [text, setText] = useState("");
-  const [todos, setTodos] = useState([
-    {
-      id: Date.now(),
-      text: "리액트 공부하기",
-    },
-    {
-      id: Date.now(),
-      text: "밥 먹기",
-    }]);
+  const [todos, setTodos] = useState([]);
 
+  const LIST_KEY = "list";
+  let toDoAry = [];
+
+  const todoStorage = () => {
+    localStorage.setItem(LIST_KEY, JSON.stringify(toDoAry));
+  }
   const handleChangeText = (event) => {
     setText(event.target.value);
   };
 
   const handleAdd = (text) => {
-    setTodos([
-      ...todos,
-      {
-        id: Date.now(),
-        text,
-      }
-    ]);
+    if (text !== "") {
+      setTodos([
+        ...todos,
+        {
+          id: Date.now(),
+          text,
+        }
+      ]);
+      toDoAry.push(
+        [
+          ...todos,
+          {
+            id: Date.now(),
+            text,
+          }
+        ]
+      );
+    }
   }
+
   const handleSetTodos = () => {
     handleAdd(text);
+    todoStorage();
     setText("");
   };
 
