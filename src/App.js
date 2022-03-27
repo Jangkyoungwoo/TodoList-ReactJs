@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import List from './List'
-import CompleteList from './CompleteList'
+import { useState } from "react";
+import List from "./List"
+import CompleteList from "./CompleteList"
 
 function App() {
   const [text, setText] = useState("");
@@ -43,13 +43,26 @@ function App() {
     }
   }
 
-  const addcompleteStorage = () => {
+  const addcompleteStorage = (id) => {
+    let complete = todos.filter((compTodo) => compTodo.id === id);
+    setComTodos([
+      ...comTodos,
+      {
+        id,
+        text: complete[0].text
+      }
+    ]);
     completeAry.push(
       ...comTodos,
+      {
+        id,
+        text: complete[0].text
+      }
     );
   };
 
-  const handleSetTodos = () => {
+  const handleSetTodos = (event) => {
+    event.preventDefault();
     handleAdd(text);
     todoStorage();
     setText("");
@@ -62,9 +75,7 @@ function App() {
   }
 
   const handleComplete = (id) => {
-    completeAry = todos.filter((compTodo) => compTodo.id === id);
-    addcompleteStorage(); //localStorage 및 state에 추가
-    setComTodos(completeAry); //set state
+    addcompleteStorage(id); //localStorage 및 state에 추가
     completeStorage(completeAry);//set localStorage
     handleDelete(id);
   }
@@ -75,11 +86,20 @@ function App() {
     completeStorage();
   }
 
+
+  /*useEffect(() => {
+    if (localStorage.getItem(LIST_KEY)) {
+      <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
+    }
+  }, []);*/
+
   return (
     <div className="App">
       <h1>TodoList</h1>
-      <input onChange={handleChangeText} value={text} typeof='text' placeholder='todos'></input>
-      <button onClick={handleSetTodos}>Add</button>
+      <form>
+        <input onChange={handleChangeText} value={text} typeof="text" placeholder="todos"></input>
+        <button onClick={handleSetTodos}>Add</button>
+      </form>
       <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
       <h1>Complete</h1>
       <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} />
