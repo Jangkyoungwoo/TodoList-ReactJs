@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import List from "./List"
 import CompleteList from "./CompleteList"
 
@@ -31,6 +31,7 @@ function App() {
         {
           id: Date.now(),
           text,
+
         }
       ]);
       toDoAry.push(
@@ -49,17 +50,27 @@ function App() {
       ...comTodos,
       {
         id,
-        text: complete[0].text
+        text: complete[0].text,
+        isChecked: false,
       }
     ]);
     completeAry.push(
       ...comTodos,
       {
         id,
-        text: complete[0].text
+        text: complete[0].text,
+        isChecked: false,
       }
     );
   };
+
+  const onCheck = (id) => {
+    setComTodos(
+      comTodos.map(comTodo =>
+        comTodo.id === id ? { ...comTodo, isChecked: !comTodo.isChecked } : comTodo
+      )
+    )
+  }
 
   const handleSetTodos = (event) => {
     event.preventDefault();
@@ -86,12 +97,16 @@ function App() {
     completeStorage();
   }
 
-
-  /*useEffect(() => {
-    if (localStorage.getItem(LIST_KEY)) {
-      <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
+  useEffect(() => {
+    const todosData = localStorage.getItem(LIST_KEY);
+    const comTodosData = localStorage.getItem(COMPLETE_KEY);
+    if (todosData) {
+      setTodos(JSON.parse(todosData));
     }
-  }, []);*/
+    if (comTodosData) {
+      setComTodos(JSON.parse(comTodosData));
+    }
+  }, []);
 
   return (
     <div className="App">
@@ -102,7 +117,7 @@ function App() {
       </form>
       <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
       <h1>Complete</h1>
-      <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} />
+      <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} onCheck={onCheck} />
     </div>
   );
 }
