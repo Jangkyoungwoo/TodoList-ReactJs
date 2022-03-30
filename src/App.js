@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Input from "./Input";
 import List from "./List"
 import CompleteList from "./CompleteList"
 
@@ -20,9 +21,16 @@ function App() {
     localStorage.setItem(COMPLETE_KEY, JSON.stringify(completeAry));
   }
 
-  const handleChangeText = (event) => {
-    setText(event.target.value);
-  };
+  useEffect(() => {
+    const todosData = localStorage.getItem(LIST_KEY);
+    const comTodosData = localStorage.getItem(COMPLETE_KEY);
+    if (todosData) {
+      setTodos(JSON.parse(todosData));
+    }
+    if (comTodosData) {
+      setComTodos(JSON.parse(comTodosData));
+    }
+  }, []);
 
   const handleAdd = (text) => {
     if (text !== "") {
@@ -43,6 +51,17 @@ function App() {
       );
     }
   }
+
+  const handleChangeText = (event) => {
+    setText(event.target.value);
+  };
+
+  const handleSetTodos = (event) => {
+    event.preventDefault();
+    handleAdd(text);
+    todoStorage();
+    setText("");
+  };
 
   const addcompleteStorage = (id) => {
     let complete = todos.filter((compTodo) => compTodo.id === id);
@@ -72,12 +91,7 @@ function App() {
     )
   }
 
-  const handleSetTodos = (event) => {
-    event.preventDefault();
-    handleAdd(text);
-    todoStorage();
-    setText("");
-  };
+
 
   const handleDelete = (id) => {
     toDoAry = todos.filter((todo) => todo.id !== id);
@@ -97,26 +111,12 @@ function App() {
     completeStorage();
   }
 
-  useEffect(() => {
-    const todosData = localStorage.getItem(LIST_KEY);
-    const comTodosData = localStorage.getItem(COMPLETE_KEY);
-    if (todosData) {
-      setTodos(JSON.parse(todosData));
-    }
-    if (comTodosData) {
-      setComTodos(JSON.parse(comTodosData));
-    }
-  }, []);
+
 
   return (
     <div className="App">
-      <h1>TodoList</h1>
-      <form>
-        <input onChange={handleChangeText} value={text} typeof="text" placeholder="todos"></input>
-        <button onClick={handleSetTodos}>Add</button>
-      </form>
+      <Input onChange={handleChangeText} onClick={handleSetTodos} text={text} />
       <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
-      <h1>Complete</h1>
       <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} onCheck={onCheck} />
     </div>
   );

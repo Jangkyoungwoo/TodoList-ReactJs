@@ -13,6 +13,7 @@ function ComTodo({ comTodo: { id, text, isChecked }, onDelete, onCheck }) {
 function CompleteList({ comTodos, onDelete, onCheck }) {
   return (
     <div>
+      <h1>Complete</h1>
       {comTodos.map((comTodo) => (
         <ComTodo comTodo={comTodo} key={comTodo.id} onDelete={onDelete} onCheck={onCheck} />
       ))}
