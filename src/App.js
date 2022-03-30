@@ -1,125 +1,50 @@
-import { useEffect, useState } from "react";
-import List from "./List"
-import CompleteList from "./CompleteList"
+import { useState } from "react";
+import AddForm from "./AddForm";
+import TodoList from "./TodoList";
+import CompleteList from "./CompleteList";
 
-function App() {
-  const [text, setText] = useState("");
-  const [todos, setTodos] = useState([]);
-  const [comTodos, setComTodos] = useState([]);
+function AppV2() {
+  const [taskList, setTaskList] = useState([]);
 
-  const LIST_KEY = "list";
-  const COMPLETE_KEY = "complete"
-  let toDoAry = [];
-  let completeAry = [];
-
-  const todoStorage = () => {
-    localStorage.setItem(LIST_KEY, JSON.stringify(toDoAry));
-  }
-
-  const completeStorage = () => {
-    localStorage.setItem(COMPLETE_KEY, JSON.stringify(completeAry));
-  }
-
-  const handleChangeText = (event) => {
-    setText(event.target.value);
+  const addTodoItem = (text) => {
+    const newId = taskList.length ? taskList[taskList.length - 1].id + 1 : 1;
+    const task = {
+      id: newId,
+      status: "TODO",
+      text,
+    };
+    setTaskList([...taskList, task]);
   };
 
-  const handleAdd = (text) => {
-    if (text !== "") {
-      setTodos([
-        ...todos,
-        {
-          id: Date.now(),
-          text,
-
-        }
-      ]);
-      toDoAry.push(
-        ...todos,
-        {
-          id: Date.now(),
-          text,
-        }
-      );
-    }
-  }
-
-  const addcompleteStorage = (id) => {
-    let complete = todos.filter((compTodo) => compTodo.id === id);
-    setComTodos([
-      ...comTodos,
-      {
-        id,
-        text: complete[0].text,
-        isChecked: false,
+  const completeTodoItem = (item) => {
+    const list = taskList.map((element) => {
+      if (element.id === item.id) {
+        element.status = "COMPLETE";
       }
-    ]);
-    completeAry.push(
-      ...comTodos,
-      {
-        id,
-        text: complete[0].text,
-        isChecked: false,
-      }
-    );
+      return element;
+    });
+    setTaskList(list);
   };
 
-  const onCheck = (id) => {
-    setComTodos(
-      comTodos.map(comTodo =>
-        comTodo.id === id ? { ...comTodo, isChecked: !comTodo.isChecked } : comTodo
-      )
-    )
-  }
-
-  const handleSetTodos = (event) => {
-    event.preventDefault();
-    handleAdd(text);
-    todoStorage();
-    setText("");
+  const deleteItem = (id) => {
+    setTaskList(taskList.filter(({ id: listId }) => id !== listId));
   };
-
-  const handleDelete = (id) => {
-    toDoAry = todos.filter((todo) => todo.id !== id);
-    setTodos(toDoAry);
-    todoStorage();
-  }
-
-  const handleComplete = (id) => {
-    addcompleteStorage(id); //localStorage 및 state에 추가
-    completeStorage(completeAry);//set localStorage
-    handleDelete(id);
-  }
-
-  const handleDeleteComplete = (id) => {
-    completeAry = comTodos.filter((compTodo) => compTodo.id !== id);
-    setComTodos(completeAry);
-    completeStorage();
-  }
-
-  useEffect(() => {
-    const todosData = localStorage.getItem(LIST_KEY);
-    const comTodosData = localStorage.getItem(COMPLETE_KEY);
-    if (todosData) {
-      setTodos(JSON.parse(todosData));
-    }
-    if (comTodosData) {
-      setComTodos(JSON.parse(comTodosData));
-    }
-  }, []);
 
   return (
-    <div className="App">
+    <div>
       <h1>TodoList</h1>
-      <form>
-        <input onChange={handleChangeText} value={text} typeof="text" placeholder="todos"></input>
-        <button onClick={handleSetTodos}>Add</button>
-      </form>
-      <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
-      <h1>Complete</h1>
-      <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} onCheck={onCheck} />
+      <AddForm addItem={addTodoItem} />
+      <TodoList
+        list={taskList.filter((element) => element.status === "TODO")}
+        onComplete={completeTodoItem}
+        onDelete={deleteItem}
+      />
+      <CompleteList
+        list={taskList.filter((element) => element.status === "COMPLETE")}
+        onDelete={deleteItem}
+      />
     </div>
   );
 }
 
-export default App;
+export default AppV2;
