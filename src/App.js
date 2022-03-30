@@ -3,7 +3,7 @@ import AddForm from "./AddForm";
 import TodoList from "./TodoList";
 import CompleteList from "./CompleteList";
 
-function AppV2() {
+function App() {
   const [taskList, setTaskList] = useState([]);
 
   const addTodoItem = (text) => {
@@ -47,4 +47,4 @@ function AppV2() {
   );
 }
 
-export default AppV2;
+export default App;

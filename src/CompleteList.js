@@ -1,22 +1,18 @@
-import styles from "./CompleteList.module.css"
-
-function ComTodo({ comTodo: { id, text, isChecked }, onDelete, onCheck }) {
+function CompleteList({ list, onDelete }) {
   return (
-    <div>
-      <input type="checkbox" onChange={() => onCheck(id)} checked={isChecked}></input>
-      <span className={isChecked ? styles.comTodo : ""}>{text} </span>
-      <button onClick={() => onDelete(id)}>❌</button>
-    </div>
-  )
-}
-
-function CompleteList({ comTodos, onDelete, onCheck }) {
-  return (
-    <div>
-      {comTodos.map((comTodo) => (
-        <ComTodo comTodo={comTodo} key={comTodo.id} onDelete={onDelete} onCheck={onCheck} />
-      ))}
-    </div>
+    <>
+      {list.length > 0 ? <h1>CompleteList</h1> : ""}
+      <div>
+        {list.map(({ id, text }) => {
+          return (
+            <div key={id}>
+              <span>{text}</span>
+              <button onClick={() => onDelete(id)}>❌</button>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
