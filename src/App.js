@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { connect } from 'react-redux';
 import Input from "./Input";
 import List from "./List"
 import CompleteList from "./CompleteList"
+import { actionCreators } from './store';
 
-function App() {
+function App({ list, addTodo }) {
   const [text, setText] = useState("");
   const [todos, setTodos] = useState([]);
   const [comTodos, setComTodos] = useState([]);
@@ -39,7 +41,6 @@ function App() {
         {
           id: Date.now(),
           text,
-
         }
       ]);
       toDoAry.push(
@@ -58,7 +59,9 @@ function App() {
 
   const handleSetTodos = (event) => {
     event.preventDefault();
-    handleAdd(text);
+    if (text !== "") {
+      addTodo(text);
+    }
     todoStorage();
     setText("");
   };
@@ -91,8 +94,6 @@ function App() {
     )
   }
 
-
-
   const handleDelete = (id) => {
     toDoAry = todos.filter((todo) => todo.id !== id);
     setTodos(toDoAry);
@@ -111,15 +112,23 @@ function App() {
     completeStorage();
   }
 
-
-
   return (
     <div className="App">
       <Input onChange={handleChangeText} onClick={handleSetTodos} text={text} />
-      <List todos={todos} onDelete={handleDelete} onComplete={handleComplete} />
+      <List todos={list} onDelete={handleDelete} onComplete={handleComplete} />
       <CompleteList comTodos={comTodos} onDelete={handleDeleteComplete} onCheck={onCheck} />
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return { list: state };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addTodo: text => dispatch(actionCreators.addTodo(text))
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
